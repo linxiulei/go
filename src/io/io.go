@@ -637,6 +637,10 @@ func (discard) WriteString(s string) (int, error) {
 	return len(s), nil
 }
 
+func (discard) WriteByte(c byte) error {
+	return nil
+}
+
 var blackHolePool = sync.Pool{
 	New: func() any {
 		b := make([]byte, 8192)

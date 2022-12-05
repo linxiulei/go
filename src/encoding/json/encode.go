@@ -317,6 +317,7 @@ func newEncodeState(w io.Writer) *encodeState {
 }
 
 func cacheEncodeState(e *encodeState) {
+	e.w = nil
 	encodeStatePool.Put(e)
 }
 
@@ -1447,6 +1448,9 @@ func (e *encodeState) WriteByte(c byte) error {
 	if e.w == nil {
 		return e.b.WriteByte(c)
 	}
+	if bw, ok := e.w.(ByteWriter); ok {
+		return bw.WriteByte(c)
+	}
 	_, err := e.w.Write([]byte{c})
 	return err
 }
@@ -1456,4 +1460,8 @@ func (e *encodeState) Bytes() []byte {
 		return e.b.Bytes()
 	}
 	return []byte{}
+}
+
+type ByteWriter interface {
+	WriteByte(c byte) error
 }
